@@ -1,31 +1,22 @@
-// Add event listener for beforeinstallprompt event
-self.addEventListener('beforeinstallprompt', (event) => {
-    // Prevent the default behavior
-    event.preventDefault();
-    // Store the event object for later use
-    deferredPrompt = event;
-    // Show a custom install button or other UI element
-    showInstallButton();
+self.addEventListener("install", function (event) {
+  event.waitUntil(
+    caches.open("demob-cache-v1").then(function (cache) {
+      return cache.addAll([
+        "/",
+        "/index.php",
+        "/styles.css",
+        "/manifest.json"
+        // Dodaj tu inne pliki, jeśli chcesz je cache'ować, np.:
+        // "/dashboard.php", "/login.php", "/images/icon-192.png"
+      ]);
+    })
+  );
 });
 
-// Function to show a custom install button or other UI element
-function showInstallButton() {
-    // Show the install button or other UI element
-    const installButton = document.getElementById('install-button');
-    installButton.style.display = 'block';
-    // Add event listener for click event on install button
-    installButton.addEventListener('click', () => {
-        // Call the prompt() method on the deferredPrompt object
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            } else {
-                console.log('User dismissed the install prompt');
-            }
-            // Clear the deferredPrompt object
-            deferredPrompt = null;
-        });
-    });
-}
+self.addEventListener("fetch", function (event) {
+  event.respondWith(
+    caches.match(event.request).then(function (response) {
+      return response || fetch(event.request);
+    })
+  );
+});

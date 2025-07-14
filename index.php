@@ -74,6 +74,43 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
             <button type="submit">Login</button>
         </form>
     </div>
+ <!-- 🟢 Przycisk do instalacji PWA -->
+<button id="install-button" style="display:none;">📲 Zainstaluj aplikację</button>
+
+<!-- 🔧 Skrypt PWA -->
+<script>
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.getElementById("install-button");
+  btn.style.display = "block";
+
+  btn.addEventListener("click", () => {
+    btn.style.display = "none";
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("✅ Dodano do ekranu głównego");
+      } else {
+        console.log("❌ Odrzucono dodanie");
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("✅ Service Worker działa"))
+      .catch((e) => console.error("❌ Błąd Service Workera:", e));
+  });
+}
+</script>   
 </body>
 <!-- demObywatel 2024 -->
 <!-- Paulina Bernaszuk -->
