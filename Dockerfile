@@ -6,3 +6,5 @@ RUN chown -R www-data:www-data /var/www/html
 
 CMD ["apache2-foreground"]
 EXPOSE 80
+# Redeploy for Render fix
+# force change for render deploy
